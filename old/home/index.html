@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre o Projeto - MANÁ UNB</title>
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            color: #1F2933;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        /* Header */
+        .header {
+            background-color: #fff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        .header-logo img {
+            max-width: 200px;
+        }
+
+        /* Menu Desktop */
+        .nav-menu-desktop {
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu-desktop ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-menu-desktop a {
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #1F2933;
+            padding: 8px 10px;
+            position: relative;
+            transition: color .3s ease;
+        }
+        .nav-menu-desktop a:hover {
+            color: #347cbc;
+        }
+        .nav-menu-desktop a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            width: 0;
+            height: 2px;
+            background: #347cbc;
+            transition: width .3s ease;
+        }
+        .nav-menu-desktop a:hover::after {
+            width: 100%;
+        }
+
+        /* Botão Assinatura Desktop */
+        .header-button-desktop a {
+            background: #64C5DC;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 22px;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            transition: background .3s ease;
+        }
+        .header-button-desktop a:hover {
+            background: #347cbc;
+        }
+
+        /* Mobile */
+        .mobile-menu-container {
+            display: none;
+        }
+        .mobile-menu-toggle {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .mobile-menu-toggle .bar {
+            width: 25px;
+            height: 3px;
+            background: #1F2933;
+        }
+        .mobile-nav-menu {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        .mobile-nav-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .mobile-nav-menu li {
+            border-bottom: 1px solid #eee;
+        }
+        .mobile-nav-menu a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: #1F2933;
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+        }
+
+        /* Seções */
+        .elementor-section {
+            padding: 50px 20px;
+        }
+        .elementor-container {
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+        .elementor-heading-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #347cbc;
+            margin-bottom: 20px;
+        }
+        .elementor-text-editor p {
+            margin-bottom: 1em;
+            line-height: 1.7;
+        }
+        .elementor-text-editor ul {
+            list-style: disc inside;
+            padding-left: 15px;
+        }
+        .elementor-text-editor ul li {
+            margin-bottom: 10px;
+        }
+
+        /* Subtítulos */
+        .elementor-section h3 {
+            font-size: 24px;
+            color: #347cbc;
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* Vídeo */
+        .elementor-video {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        .elementor-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Rodapé */
+        .footer {
+            background: #333;
+            color: #fff;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 620px) {
+            .nav-menu-desktop,
+            .header-button-desktop {
+                display: none;
+            }
+            .mobile-menu-container {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <img src="../img/logo_web.png" alt="Logo UNB">
+        </div>
+
+        <!-- Menu Mobile -->
+        <div class="mobile-menu-container">
+            <div class="mobile-menu-toggle" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <nav class="mobile-nav-menu">
+                <ul>
+                    <li><a href="../index.php">Home</a></li>
+                    <li><a href="#">Sobre o Projeto</a></li>
+                    <li><a href="https://projetomana.cpb.com.br/catalogo.html" target="_blank">ASSINATURA</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Menu Desktop -->
+        <nav class="nav-menu-desktop">
+            <ul>
+                <li><a href="../index.php">Home</a></li>
+                <li><a href="#">Sobre o Projeto</a></li>
+            </ul>
+        </nav>
+        <div class="header-button-desktop">
+            <a href="https://projetomana.cpb.com.br/catalogo.html" target="_blank">ASSINATURA</a>
+        </div>
+    </header>
+
+    <!-- Conteúdo -->
+    <section class="elementor-section">
+        <div class="elementor-container">
+            <h1 class="elementor-heading-title">PROJETO MANÁ</h1>
+            <div class="elementor-text-editor">
+                <p>O projeto Maná está baseado na experiência do povo de Israel no deserto, quando foi alimentado por Deus. Em Éxodo 16:16-21 o pão representa a palavra de Deus que está disponível para todos. Só que há um pedido Divino em Mateus 6:33, que diz: "Buscar" o que significa que precisamos nos interessar, sair e procurar. Os israelitas tinham que sair cedo e procurar o Maná no deserto.</p>
+                <p>Hoje, assim como no passado, a palavra de Deus está disponível para todos e os mesmos princípios que regeram o consumo do Maná são válidos para este tempo:</p>
+                <ul>
+                    <li>— Cada um. (16:16) A ideia bíblica da salvação não é corporativa, é individual, por isso, em Éxodo 16:16 Deus ordenou: "Colhei disso cada um". Deve haver um encontro pessoal, deve haver uma procura pessoal, por parte de cada um dos membros da família.</li>
+                    <li>— Colhei cada um segundo o que pode comer. (16:16) Isso significa que não tem que haver uniformidade a forma de estudar a Bíblia, sobre quanto tempo deve durar, etc. Por isso a igreja tem um plano diferenciado de guia de estudo segundo a idade e a experiência espiritual.</li>
+                    <li>— Cada dia, (Éxodo 16:19) a ordem foi, comei-o hoje, não se podia deixar para o outro dia. A experiência espiritual tem que renovar-se todos os dias. O que eu como hoje basicamente me serve para hoje. Por isso que a palavra de Deus deve ser consumida todos os dias. A igreja tem o plano da leitura diária da palavra de Deus a fim de preservar o cristão das doenças espirituais as que resultam de falta de alimento.</li>
+                    <li>— De manhã cedo. No verso 21 diz a palavra de Deus: "Vindo o calor do sol se derretia" Com a saída do sol vem as atividades do dia, por isso Jesus ia a presença do Pai muito cedo, para no meio da tranquilidade da manhã encontrava o pão espiritual. O melhor momento para encontrar a palavra de Deus é na primeira hora do dia, quando todo está tranquilo.</li>
+                </ul>
+            </div>
+
+            <h3>Importância do estudo diário da lição da Escola Sabatina</h3>
+            <div class="elementor-text-editor">
+                <ul>
+                    <li>1. O estudo diário cria hábitos que favorecem o crescimento espiritual.</li>
+                    <li>2. Fortalece nossas convicções na palavra de Deus.</li>
+                    <li>3. Nos impulsa a partilhar a cada dia o aprendizado.</li>
+                    <li>4. Une e fortalece a família</li>
+                </ul>
+            </div>
+
+            <div class="elementor-video">
+                <iframe src="https://www.youtube.com/embed/eFaUahINz-w" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <div class="footer">
+        <p>&copy; 2023 – Todos os direitos reservados a União Norte Brasileira.</p>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.querySelector('.mobile-nav-menu').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
