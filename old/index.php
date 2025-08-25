@@ -80,7 +80,7 @@ if (isset($_GET['data'])) {
       justify-content:center;
       z-index:9999;
       flex-direction: column;
-      backdrop-filter: blur(1px);
+     
     }
     .loading-text {
       margin-top: 16px;
@@ -88,6 +88,7 @@ if (isset($_GET['data'])) {
       color: #3478BD;
       font-weight: bold;
     }
+    
     .spinner {
       border:8px solid #f3f3f3;
       border-top:8px solid #3478BD;
@@ -251,6 +252,16 @@ if (isset($_GET['data'])) {
       .grid {grid-template-columns:1fr;}
       .total-number {font-size:60px;}
     }
+
+#mopa {
+  grid-column: 2 / -2;  /* ocupa todas as colunas */
+  width: 100%; /* centraliza dentro da linha */
+}
+
+/* Garante que o cartão MOPA não tenha estilos conflitantes */
+
+
+
   </style>
 </head>
 <body>
@@ -260,6 +271,7 @@ if (isset($_GET['data'])) {
     <div class="spinner"></div>
     <div class="loading-text">Carregando dados...</div>
   </div>
+  
 
   <!-- Header -->
   <header class="header">
@@ -273,8 +285,8 @@ if (isset($_GET['data'])) {
       </div>
       <nav class="mobile-nav-menu">
         <ul>
-          <li><a href="../../index.php">Home</a></li>
-          <li><a href="../../home/index.html">Sobre o Projeto</a></li>
+          <li><a href="./index.php">Home</a></li>
+          <li><a href="./home/index.html">Sobre o Projeto</a></li>
           <li><a href="https://projetomana.cpb.com.br/catalogo.html" target="_blank">ASSINATURA</a></li>
         </ul>
       </nav>
@@ -282,8 +294,8 @@ if (isset($_GET['data'])) {
 
     <nav class="nav-menu-desktop">
       <ul>
-        <li><a href="../../index.php">Home</a></li>
-        <li><a href="../../home/index.html">Sobre o Projeto</a></li>
+        <li><a href="./index.php">Home</a></li>
+        <li><a href="./home/index.html">Sobre o Projeto</a></li>
       </ul>
     </nav>
 
@@ -330,9 +342,9 @@ if (isset($_GET['data'])) {
         <a href="./associacao/mnem/index.php" class="association-name">MISSÃO NORDESTE MARANHENSE</a>
       </div>
 
-      <div class="card">
+      <div class="card" id="mopa">
         <div class="card-number" id="mopa-number">00000</div>
-        <a href="./associacao/mopa/index.php" class="association-name">MISSÃO OESTE DO PARÁ</a>
+        <a href="./associacao/mopa/index.php" class="association-name" id="mopas" >MISSÃO OESTE DO PARÁ</a>
       </div>
     </div>
   </div>

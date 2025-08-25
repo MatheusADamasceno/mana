@@ -1,78 +1,59 @@
 <?php
-// Suas credenciais e token para a primeira requisição (relatório geral)
-$authToken1 = 'Basic NTFDNjFEQjMtMTU1RC03MzI1LTQ1MjFFOTEzNUNDNUQ4QzI=';
 
-// Dados para a primeira requisição
-$postData1 = array(
-    'login' => 'unb',
-    'senha' => '+zv!t{7t^EY5+[CaAssoc%d&#@Csep)*@!%#',
-    'idAssociacao' => 0, // ID 0 para o relatório geral
-    'tipoRelatorio' => 1
-);
+// =========================================
+// MODO API (proxy seguro para o front-end)
+// =========================================
+if (isset($_GET['data'])) {
+    header('Content-Type: application/json; charset=utf-8');
 
-// Configuração do cURL
-$ch1 = curl_init('https://ecommerce-api-alpha.cpb.com.br/v1/reports/manaByUnion.json');
-curl_setopt_array($ch1, array(
-    CURLOPT_POST => TRUE,
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_HTTPHEADER => array(
-        'Authorization: ' . $authToken1,
-        'Content-Type: application/json'
-    ),
-    CURLOPT_POSTFIELDS => json_encode($postData1)
-));
-$response1 = curl_exec($ch1);
-curl_close($ch1);
+    // Suas credenciais e token para a primeira requisição (relatório geral)
+    $authToken = 'Basic NTFDNjFEQjMtMTU1RC03MzI1LTQ1MjFFOTEzNUNDNUQ4QzI=';
 
-if ($response1 === FALSE) {
-    die(curl_error($ch1));
-}
-$responseData1 = json_decode($response1, TRUE);
+    // Dados para a requisição
+    $postData = array(
+        'login' => 'unb',
+        'senha' => '+zv!t{7t^EY5+[CaAssoc%d&#@Csep)*@!%#',
+        'idAssociacao' => $_GET['id'] ?? 0, // Use ID from query param, default to 0
+        'tipoRelatorio' => $_GET['tipo'] ?? 1 // Use type from query param, default to 1
+    );
 
-// Define a variável $total
-$total = '';
-if (isset($responseData1['results']) && is_array($responseData1['results'])) {
-    foreach ($responseData1['results'] as $result) {
-        if (isset($result['siglaAssociacao']) && $result['siglaAssociacao'] === 'Todos') {
-            $total = $result['total'];
-            break;
-        }
+    // Configuração do cURL
+    $ch = curl_init('https://ecommerce-api-alpha.cpb.com.br/v1/reports/manaByUnion.json');
+    curl_setopt_array($ch, array(
+        CURLOPT_POST => TRUE,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_HTTPHEADER => array(
+            'Authorization: ' . $authToken,
+            'Content-Type: application/json'
+        ),
+        CURLOPT_POSTFIELDS => json_encode($postData),
+        CURLOPT_TIMEOUT => 25
+    ));
+
+    $response = curl_exec($ch);
+
+    if ($response === FALSE) {
+        http_response_code(500);
+        echo json_encode(['ok' => false, 'error' => curl_error($ch)], JSON_UNESCAPED_UNICODE);
+        exit;
     }
-}
-if (empty($total) && isset($responseData1['results'][0]['total'])) {
-    $total = $responseData1['results'][0]['total'];
+
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($status >= 400) {
+        http_response_code($status);
+        echo json_encode(['ok' => false, 'error' => 'HTTP ' . $status, 'raw' => $response], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    echo $response;
+    exit;
 }
 
-// Credenciais para a segunda requisição (dados por distrito)
-$authToken = 'Basic NTFDNjFEQjMtMTU1RC03MzI1LTQ1MjFFOTEzNUNDNUQ4QzI=';
-$Campo = "Associação Norte do Pará";
-$total = str_pad($responseData1['results'][1]['total'], 5, '0', STR_PAD_LEFT);
-$postData = array(
-    'login' => 'unb',
-    'senha' => '+zv!t{7t^EY5+[CaAssoc%d&#@Csep)*@!%#',
-    'idAssociacao' => 38,
-    'tipoRelatorio' => 2
-);
-
-// Configuração do cURL
-$ch = curl_init('https://ecommerce-api-alpha.cpb.com.br/v1/reports/manaByUnion.json');
-curl_setopt_array($ch, array(
-    CURLOPT_POST => TRUE,
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_HTTPHEADER => array(
-        'Authorization: ' . $authToken,
-        'Content-Type: application/json'
-    ),
-    CURLOPT_POSTFIELDS => json_encode($postData)
-));
-$response = curl_exec($ch);
-curl_close($ch);
-
-if ($response === FALSE) {
-    die(curl_error($ch));
-}
-$responseData = json_decode($response, TRUE);
-$qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
+// =========================================
+// MODO HTML/Front-end (com pré-carregamento)
+// =========================================
 ?>
 
 <!DOCTYPE html>
@@ -93,27 +74,72 @@ $qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
     <link rel="stylesheet" id="elementor-gf-local-robotoslab-css" href="./wp-content/uploads/elementor/google-fonts/css/robotoslab.css?ver=1742225471" type="text/css" media="all">
 
     <style>
-            body {
-    font-family: 'Raleway', sans-serif;
-    color: #1F2933;
-    margin: 0;
-    padding: 0;
-    
-    
-  background-image: url('../../img/Banner_MANA-2025.jpg');  
-     background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
-    
-    
-    background-size: auto;
-}
-        .main-container {
+        body {
+            font-family: 'Raleway', sans-serif;
+            color: #1F2933;
+            margin: 0;
+            padding: 0;
+            background-image: url('../../img/Banner_MANA-2025.jpg');  
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            background-size: auto;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Loading Screen Styles --- */
+        #loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+           
+            z-index: 9999;
+           
+        }
+        .loading-text {
+            margin-top: 16px;
+            font-size: 18px;
+            color: #3478BD;
+            font-weight: bold;
+        }
+        .spinner {
+            border:8px solid #f3f3f3;
+            border-top:8px solid #3478BD;
+            border-radius:50%;
+            width:70px;
+            height:70px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+        .preloader { display: none; } /* Kept for consistency but not used in the new JS approach */
+
+        /* --- Main Content and Footer --- */
+        .main-container {
+            display: none; /* Initially hidden */
+            flex: 1;
             flex-direction: column;
             align-items: center;
             padding: 40px 20px;
         }
+        .footer-credit {
+            display: none; /* Initially hidden */
+            width: 100%;
+            background-color: #f0f0f0;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: auto;
+        }
+        
         .header-section {
             text-align: center;
             margin-bottom: 40px;
@@ -183,16 +209,6 @@ $qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
             background-color: #F9AF08;
             color: #ffffffff;
         }
-        .preloader { display: none; }
-        .footer-credit {
-            width: 100%;
-            background-color: #f0f0f0;
-            padding: 20px 0;
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-            margin-top: 50px;
-        }
 
         /* Estilos do Menu */
         .header {
@@ -206,7 +222,7 @@ $qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
         .header-logo img {
             max-width: 200px;
         }
-        .nav-menu-desktop, .header-button-desktop {
+        .nav-menu-desktop, .header-button {
             display: flex;
             align-items: center;
         }
@@ -242,7 +258,7 @@ $qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
         .nav-menu-desktop a:hover::after {
             width: 100%;
         }
-        .header-button-desktop a {
+        .header-button a {
             background-color: #64C5DC;
             color: #ffffff;
             padding: 10px 20px;
@@ -251,16 +267,13 @@ $qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
             transition: background-color 0.3s ease;
             font-family: 'Poppins', sans-serif;
         }
-        .header-button-desktop a:hover {
+        .header-button a:hover {
             background-color: #347cbc;
         }
         
         /* Menu Mobile */
-        .mobile-menu-container {
-            display: none;
-        }
         .mobile-menu-toggle {
-            display: flex;
+            display: none;
             flex-direction: column;
             cursor: pointer;
             gap: 5px;
@@ -308,35 +321,31 @@ $qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
 
         /* Oculta o menu de desktop e o botão de assinatura em telas pequenas */
         @media (max-width: 620px) {
-            .nav-menu-desktop, .header-button-desktop {
+            .nav-menu-desktop, .header-button {
                 display: none;
             }
-            .mobile-menu-container {
-                display: block;
+            .mobile-menu-toggle {
+                display: flex;
             }
         }
     </style>
 </head>
 <body>
 
+    <div id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Carregando dados...</div>
+    </div>
+
 <header class="header">
     <div class="header-logo">
         <img src="http://mana.unb.org.br/wp-content/uploads/2023/06/logo_web.png" alt="Logo da União Norte Brasileira">
     </div>
     
-    <div class="mobile-menu-container">
-        <div class="mobile-menu-toggle" onclick="toggleMenu()">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-        </div>
-          <nav class="mobile-nav-menu">
-            <ul>
-                <li><a href="../../index.php">Home</a></li>
-                <li><a href="../../home/index.html">Sobre o Projeto</a></li>
-                <li><a href="https://projetomana.cpb.com.br/catalogo.html" target="_blank">ASSINATURA</a></li>
-            </ul>
-        </nav>
+    <div class="mobile-menu-toggle" onclick="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
     </div>
     
     <nav class="nav-menu-desktop">
@@ -345,174 +354,107 @@ $qtde = isset($responseData['results']) ? count($responseData['results']) : 0;
             <li><a href="../../home/index.html">Sobre o Projeto</a></li>
         </ul>
     </nav>
-    <div class="header-button-desktop">
+    <div class="header-button">
         <a href="https://projetomana.cpb.com.br/catalogo.html" target="_blank">ASSINATURA</a>
     </div>
 </header>
 
-<div class="main-container">
+<nav class="mobile-nav-menu">
+    <ul>
+         <li><a href="../../index.php">Home</a></li>
+            <li><a href="../../home/index.html">Sobre o Projeto</a></li>
+        <li><a href="https://projetomana.cpb.com.br/catalogo.html" target="_blank">ASSINATURA</a></li>
+    </ul>
+</nav>
+
+<div class="main-container" id="conteudo">
     <div class="header-section">
-        <h1 class="main-counter"><?php echo str_pad($total, 5, '0', STR_PAD_LEFT); ?></h1>
-        <h2 class="page-subtitle">Números de Assinaturas da Lição da Escola Sabatina na <?php echo $Campo; ?></h2>
+        <h1 class="main-counter" id="total-number">00000</h1>
+        <h2 class="page-subtitle">Números de Assinaturas da Lição da Escola Sabatina na <span id="association-name">Associação Norte do Pará</span></h2>
     </div>
 
-    <div class="districts-container">
-        <?php
-        if ($qtde > 0):
-            foreach ($responseData['results'] as $distrito):
-                if (isset($distrito['distrito']) && $distrito['distrito'] !== "" && isset($distrito['siglaAssociacao']) && $distrito['siglaAssociacao'] !== "Todos"):
-        ?>
-                    <div class="district-box">
-                        <span class="district-name"><?php echo htmlspecialchars($distrito['distrito']); ?></span>
-                        <strong class="district-total"><?php echo htmlspecialchars($distrito['total']); ?></strong>
-                    </div>
-        <?php
-                endif;
-            endforeach;
-        endif;
-        ?>
-    </div>
+    <div class="districts-container" id="districts-grid">
+        </div>
 
     <div class="footer-section">
         <input type="button" value="Voltar" class="back-button" onClick="history.back();">
     </div>
 </div>
 
-<div class="footer-credit">
+<div class="footer-credit" id="rodape">
     © 2023 - Todos os direitos reservados à União Norte Brasileira.
 </div>
 
 <script>
-function toggleMenu() {
-    const mobileMenu = document.querySelector('.mobile-nav-menu');
-    mobileMenu.classList.toggle('active');
-}
-</script>
+    function toggleMenu() {
+        const mobileMenu = document.querySelector('.mobile-nav-menu');
+        mobileMenu.classList.toggle('active');
+    }
 
-<script type="text/javascript" src="../assets/js/jquery-1.11.0.min.js"></script>
-<script type="text/javascript" src="../assets/js/jquery-ui-1.10.4.min.js"></script>
-<script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../assets/js/notifyMe.js"></script>
-<script type="text/javascript" src="../assets/js/jquery.placeholder.js"></script>
-<script type="text/javascript" src="../assets/js/jquery.plugin.js"></script> 
-<script type="text/javascript" src="../assets/js/jquery.countdown.js"></script>
-<script type="text/javascript" src="../assets/js/init.js?chave=<?php echo date('YmdHis'); ?>"></script>
-<script type="text/javascript" src="https://mana.unb.org.br/wp-content/plugins/royal-elementor-addons/assets/js/lib/particles/particles.js?ver=3.0.6" id="wpr-particles-js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var particleConfig = {
-        "particles": {
-            "number": {
-                "value": 80,
-                "density": {
-                    "enable": true,
-                    "value_area": 800
-                }
-            },
-            "color": {
-                "value": "#7391ae"
-            },
-            "shape": {
-                "type": "circle",
-                "stroke": {
-                    "width": 0,
-                    "color": "#7391ae"
-                },
-                "polygon": {
-                    "nb_sides": 5
-                },
-                "image": {
-                    "src": "img/github.svg",
-                    "width": 100,
-                    "height": 100
-                }
-            },
-            "opacity": {
-                "value": 0.5,
-                "random": false,
-                "anim": {
-                    "enable": false,
-                    "speed": 1,
-                    "opacity_min": 0.1,
-                    "sync": false
-                }
-            },
-            "size": {
-                "value": 3,
-                "random": true,
-                "anim": {
-                    "enable": false,
-                    "speed": 40,
-                    "size_min": 0.1,
-                    "sync": false
-                }
-            },
-            "line_linked": {
-                "enable": true,
-                "distance": 150,
-                "color": "#7391ae",
-                "opacity": 0.4,
-                "width": 1
-            },
-            "move": {
-                "enable": true,
-                "speed": 6,
-                "direction": "none",
-                "random": false,
-                "straight": false,
-                "out_mode": "out",
-                "bounce": false,
-                "attract": {
-                    "enable": false,
-                    "rotateX": 600,
-                    "rotateY": 1200
-                }
-            }
-        },
-        "interactivity": {
-            "detect_on": "window",
-            "events": {
-                "onhover": {
-                    "enable": true,
-                    "mode": "repulse"
-                },
-                "onclick": {
-                    "enable": true,
-                    "mode": "push"
-                },
-                "resize": true
-            },
-            "modes": {
-                "grab": {
-                    "distance": 400,
-                    "line_linked": {
-                        "opacity": 1
-                    }
-                },
-                "bubble": {
-                    "distance": 400,
-                    "size": 40,
-                    "duration": 2,
-                    "opacity": 8,
-                    "speed": 3
-                },
-                "repulse": {
-                    "distance": 200,
-                    "duration": 0.4
-                },
-                "push": {
-                    "particles_nb": 4
-                },
-                "remove": {
-                    "particles_nb": 2
-                }
-            }
-        },
-        "retina_detect": true
-    };
-    particlesJS('main-container-particles', particleConfig);
-});
-</script>
+    const pad5 = (n) => String(n ?? 0).padStart(5, '0');
 
+    function preencherDados(data) {
+        // Find the total number from the data
+        const totalResult = data?.results.find(res => res.siglaAssociacao === 'Todos');
+        const total = totalResult ? totalResult.total : 0;
+        document.getElementById('total-number').textContent = pad5(total);
+
+        // Update the association name
+        const associationName = data?.results.find(res => res.siglaAssociacao === 'Todos');
+        document.getElementById('association-name').textContent = 'União Norte Brasileira';
+        
+        // Populate the districts
+        const districtsGrid = document.getElementById('districts-grid');
+        districtsGrid.innerHTML = ''; // Clear previous content
+
+        const filteredDistricts = data?.results.filter(d => d.distrito && d.distrito !== "" && d.siglaAssociacao !== "Todos") || [];
+        
+        filteredDistricts.forEach(distrito => {
+            const box = document.createElement('div');
+            box.classList.add('district-box');
+            box.innerHTML = `
+                <span class="district-name">${distrito.distrito}</span>
+                <strong class="district-total">${distrito.total}</strong>
+            `;
+            districtsGrid.appendChild(box);
+        });
+    }
+
+    function mostrarConteudo() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('conteudo').style.display = 'flex';
+        document.getElementById('rodape').style.display = 'flex';
+    }
+
+    function mostrarErro(msg) {
+        const txt = document.querySelector('.loading-text');
+        if (txt) txt.textContent = msg || 'Falha ao carregar. Tente novamente.';
+    }
+
+    async function carregarAPI() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id') || 38; // Default to Associação Norte do Pará (id 38)
+            const tipo = params.get('tipo') || 2; // Default to type 2
+            
+            const resp = await fetch(window.location.pathname + `?data=1&id=${id}&tipo=${tipo}`, { cache: 'no-store' });
+            
+            if (!resp.ok) {
+                const errorData = await resp.json();
+                throw new Error('HTTP ' + resp.status + ': ' + (errorData.error || 'Unknown Error'));
+            }
+            const data = await resp.json();
+
+            preencherDados(data);
+            mostrarConteudo();
+        } catch (e) {
+            console.error(e);
+            mostrarErro('Não foi possível carregar os dados. Verifique sua conexão e recarregue a página.');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarAPI);
+    
+</script>
 </body>
 </html>
